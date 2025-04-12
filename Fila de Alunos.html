@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fila de Alunos - Atendimento Virtual</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .queue-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .queue-list li {
+      background-color: #e0f7fa;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .queue-list img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Fila de Alunos na Sala de Espera</h1>
+    <p class="subtitle">Aguardando atendimento virtual</p>
+
+    <div class="buttons">
+      <button id="addAlunoBtn">Adicionar Aluno</button>
+      <button id="removeAlunoBtn">Atender Próximo</button>
+    </div>
+
+    <ul id="filaAlunos" class="queue-list"></ul>
+  </div>
+
+  <script>
+    const fila = []; 
+    const filaList = document.getElementById("filaAlunos");
+    const addAlunoBtn = document.getElementById("addAlunoBtn");
+    const removeAlunoBtn = document.getElementById("removeAlunoBtn");
+
+    function renderizarFila() {
+      filaList.innerHTML = "";
+      fila.forEach((aluno, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <img src="${aluno.foto}" alt="Foto de ${aluno.nome}">
+          <span><strong>${index + 1}º</strong> ${aluno.nome}</span>
+        `;
+        filaList.appendChild(li);
+      });
+    }
+
+    async function adicionarAluno() {
+      const res = await fetch("https://randomuser.me/api/");
+      const data = await res.json();
+      const aluno = data.results[0];
+
+      fila.push({
+        nome: `${aluno.name.first} ${aluno.name.last}`,
+        foto: aluno.picture.thumbnail
+      });
+
+      renderizarFila();
+    }
+
+    function atenderAluno() {
+      if (fila.length > 0) {
+        const alunoAtendido = fila.shift();
+        alert(`Atendendo aluno: ${alunoAtendido.nome}`);
+        renderizarFila();
+      } else {
+        alert("Nenhum aluno na sala de espera.");
+      }
+    }
+
+    addAlunoBtn.addEventListener("click", adicionarAluno);
+    removeAlunoBtn.addEventListener("click", atenderAluno);
+  </script>
+</body>
+</html>
